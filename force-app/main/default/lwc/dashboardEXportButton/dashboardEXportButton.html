@@ -1,0 +1,75 @@
+<template>
+    <lightning-card title="Export Dashboard Data" icon-name="standard:report">
+        <div class="slds-p-horizontal_medium">
+            <lightning-combobox
+                label="Select Component to Export"
+                value={selectedComponent}
+                options={componentOptions}
+                onchange={handleComponentChange}
+                class="slds-m-bottom_medium">
+            </lightning-combobox>
+            
+            <lightning-button 
+                label="Export to CSV" 
+                variant="brand" 
+                onclick={handleExportClick}
+                disabled={isLoading}
+                class="slds-m-bottom_medium">
+            </lightning-button>
+            
+            <template if:true={isLoading}>
+                <div class="slds-p-vertical_medium">
+                    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                    <div class="slds-text-color_weak slds-text-align_center">Processing export...</div>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>
+
+
+<!-- <template>
+    <lightning-card title="Export Dashboard Data" icon-name="standard:report">
+        <div class="slds-p-horizontal_medium">
+            <template if:true={error}>
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_warning" role="alert">
+                    <span class="slds-assistive-text">Warning</span>
+                    <h2>{error}</h2>
+                </div>
+            </template>
+            
+            <template if:true={recordId}>
+                <lightning-combobox
+                    label="Select Component to Export"
+                    value={selectedComponent}
+                    options={componentOptions}
+                    onchange={handleComponentChange}
+                    class="slds-m-bottom_medium">
+                </lightning-combobox>
+                
+                <lightning-button 
+                    label="Export to Excel/CSV" 
+                    variant="brand" 
+                    onclick={handleExportClick}
+                    disabled={isLoading}
+                    class="slds-m-bottom_medium">
+                </lightning-button>
+                
+                <template if:true={isLoading}>
+                    <div class="slds-p-vertical_medium">
+                        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                        <div class="slds-text-color_weak slds-text-align_center">Processing export...</div>
+                    </div>
+                </template>
+            </template>
+            
+            <template if:false={recordId}>
+                <div class="slds-text-color_error slds-m-vertical_medium">
+                    No dashboard ID found. Please add this component to a Dashboard record page.
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template> -->
+
+
