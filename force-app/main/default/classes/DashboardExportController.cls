@@ -23,8 +23,6 @@ public with sharing class DashboardExportController {
             catch (Exception e) {
                 System.debug('Error querying dashboard components directly: ' + e.getMessage());
                 
-                // Alternative approach: query reports in the org and try to identify which ones
-                // might be used in dashboards by naming conventions or last usage
                 List<Report> recentReports = [
                     SELECT Id, Name
                     FROM Report
@@ -74,10 +72,6 @@ public with sharing class DashboardExportController {
             }
             
             System.debug('Found ' + reportIds.size() + ' reports with exact name: ' + reportName);
-        // } 
-        // catch (Exception e) {
-        //     System.debug('Error in findReportsByName: ' + e.getMessage());
-        // }
         
         return reportIds;
     }
@@ -191,28 +185,7 @@ public with sharing class DashboardExportController {
             if (String.isNotBlank(componentName) && componentName != 'All Components') {
                 // If a specific component is requested, find its report by name
                 Set<Id> reportIds = findReportsByName(componentName);
-                
-                // System.debug('Found ' + reportIds.size() + ' report IDs for component: ' + componentName);
-                
-                // Process the specific report
-                // if (!reportIds.isEmpty()) {
-                //     for (Id reportId : reportIds) {
-                //         String reportName = getReportName(reportId);
-                //         List<Map<String, Object>> singleReportData = exportReportData(reportId);
-                        
-                //         // Only add non-empty report data
-                //         if (singleReportData != null && !singleReportData.isEmpty()) {
-                //             // Add report name to each record
-                //             for (Map<String, Object> record : singleReportData) {
-                //                 record.put('Report_Source', reportName);
-                //             }
-                            
-                //             reportData.put(reportName, singleReportData);
-                //         }
-                //     }
-                // } 
-                
-                // else {
+
                     // Try a more lenient search if we didn't find an exact match
                     reportIds = findReportsByBroaderSearch(componentName);
                     
@@ -235,7 +208,6 @@ public with sharing class DashboardExportController {
                 // Process all reports that might be related to the dashboard
                 List<Report> allReports;
                 
-                // try {
                     // Try to get all recently used reports
                     allReports = [
                         SELECT Id, Name
@@ -244,15 +216,7 @@ public with sharing class DashboardExportController {
                         ORDER BY LastRunDate DESC
                         LIMIT 50
                     ];
-                // } catch (Exception e) {
-                //     // Fallback to recent reports by created date
-                //     allReports = [
-                //         SELECT Id, Name
-                //         FROM Report
-                //         ORDER BY CreatedDate DESC
-                //         LIMIT 50
-                //     ];
-                // }
+
                 
                 System.debug('Found ' + allReports.size() + ' reports for "All Components" option');
                 
@@ -273,25 +237,10 @@ public with sharing class DashboardExportController {
                             
                             reportData.put(reportName, reportDataItems);
                         }
-                    // } 
-                    // catch (Exception e) {
-                    //     System.debug('Error processing report: ' + reportName + ', Error: ' + e.getMessage());
-                    //     // Continue with other reports
                     }
                 }
-            
-           
-            // If we still don't have reports, provide a helpful error
-            // if (reportData.isEmpty()) {
-            //     throw new AuraHandledException('No reports found for the specified criteria. Please ensure the reports exist and are accessible.');
-            // }
-        // }
+
             return reportData;
-        // } 
-        // catch (Exception e) {
-        //     System.debug('Exception in exportDashboardData: ' + e.getMessage() + '\n' + e.getStackTraceString());
-        //     throw new AuraHandledException('Error retrieving dashboard data: ' + e.getMessage());
-        // }
     }
    
 /**
@@ -300,9 +249,7 @@ public with sharing class DashboardExportController {
  */
     @AuraEnabled
     public static List<Map<String, Object>> exportReportData(Id reportId) {
-        // if (Test.isRunningTest()) {
-        //     return getTestReportData(reportId);
-        // }
+
 
         List<Map<String, Object>> exportData = new List<Map<String, Object>>();
         
@@ -327,55 +274,24 @@ public with sharing class DashboardExportController {
             Set<String> factMapKeys = results.getFactMap().keySet();
             System.debug('Available factMap keys: ' + factMapKeys);
             
-            // if (factMapKeys.isEmpty()) {
-            //     System.debug('No data available in the report');
-            //     Map<String, Object> noDataRecord = new Map<String, Object>();
-            //     noDataRecord.put('Info', 'No data available in the report');
-            //     exportData.add(noDataRecord);
-            //     return exportData;
-            // }
-            
+           
             // Process based on report format - using safer checks instead of enum values
             String formatName = String.valueOf(reportFormat);
             
             if (formatName == 'TABULAR') {
                 System.debug('Processing tabular report');
-                // // For tabular reports, T!T is the key
-                // if (factMapKeys.contains('T!T')) {
-                //     exportData = processReportFactWithDetails(results, metadata, 'T!T');
-                // }
+
             }
             else if (formatName == 'SUMMARY') {
                 System.debug('Processing summary report');
                 // For summary reports, need to handle multiple levels of grouping
                 exportData = processSummaryReport(results, metadata, factMapKeys);
             }
-            // else if (formatName == 'MATRIX') {
-            //     System.debug('Processing matrix report');
-            //     // For matrix reports, complex grid of data
-            //     exportData = processMatrixReport(results, metadata, factMapKeys);
-            // }
-            // // Instead of directly checking for JOINED, we'll use a string comparison
-            // else if (formatName.equals('JOINED')) {
-            //     System.debug('Processing joined report');
-            //     // For joined reports, which combine multiple report blocks
-            //     exportData = processJoinedReport(results, metadata, factMapKeys);
-            // }
+
             else {
                 System.debug('Unknown report format: ' + formatName);
                 // Generic approach for any format
                 String bestKey = determineMainFactMapKey(factMapKeys);
-                
-                // if (bestKey != null) {
-                //     System.debug('Using best key: ' + bestKey);
-                //     Object factObject = results.getFactMap().get(bestKey);
-                    
-                //     if (factObject instanceof Reports.ReportFactWithDetails) {
-                //         exportData = processReportFactWithDetails(results, metadata, bestKey);
-                //     } else if (factObject instanceof Reports.ReportFactWithSummaries) {
-                //         exportData = processReportFactWithSummaries(results, metadata, bestKey);
-                //     }
-                // }
             }
             
             // If we still don't have data, try a more aggressive approach
@@ -645,10 +561,6 @@ public with sharing class DashboardExportController {
         }
     }
 
-
-
-    
-    
         /**
          * Process reports with summaries (used for summary and matrix reports)
          */
@@ -741,9 +653,7 @@ public with sharing class DashboardExportController {
             
                 // Try to process child groupings if available
                 try {
-                    // We'll skip trying to navigate through groupings automatically
-                    // as the API methods might differ between API versions
-                    // Instead, we'll make sure we at least capture the current level's data
+
                     System.debug('Not attempting to process nested groupings due to API compatibility');
                 } catch (Exception e) {
                     System.debug('Error processing child groupings: ' + e.getMessage());
@@ -791,16 +701,13 @@ public with sharing class DashboardExportController {
                    
                     for (String columnName : detailColumns) {
                         String columnLabel = columnName;
-                        // try {
+ 
                             if (results.getReportExtendedMetadata().getDetailColumnInfo().containsKey(columnName)) {
                                 Reports.DetailColumn columnInfo =
                                     results.getReportExtendedMetadata().getDetailColumnInfo().get(columnName);
                                 columnLabel = columnInfo.getLabel();
-                            // }
+
                         } 
-                        // catch (Exception e) {
-                        //     System.debug('Error getting column label: ' + e.getMessage());
-                        // }
                         columnToLabelMap.put(columnName, columnLabel);
                     }
                    
@@ -836,38 +743,7 @@ public with sharing class DashboardExportController {
                         exportData.add(emptyData);
                     }
                 }
-                // else if (factObject instanceof Reports.ReportFactWithSummaries) {
-                //     // It's a summary report with aggregates
-                //     System.debug('Found ReportFactWithSummaries for key: ' + key);
-                //     try {
-                //         Reports.ReportFactWithSummaries factSummaries = (Reports.ReportFactWithSummaries)factObject;
-                       
-                //         // Create a record for the summaries
-                //         Map<String, Object> summaryData = new Map<String, Object>();
-                //         summaryData.put('GroupKey', key);
-                       
-                //         // Get aggregate values
-                //         List<Reports.SummaryValue> aggregates = factSummaries.getAggregates();
-                //         if (aggregates != null && !aggregates.isEmpty()) {
-                //             for (Integer i = 0; i < aggregates.size(); i++) {
-                //                 try {
-                //                     Object value = aggregates[i].getValue();
-                //                     summaryData.put('Aggregate_' + i, value);
-                //                 } catch (Exception e) {
-                //                     summaryData.put('Aggregate_' + i, '[Error: ' + e.getMessage() + ']');
-                //                 }
-                //             }
-                //         }
-                       
-                //         exportData.add(summaryData);
-                //     } catch (Exception e) {
-                //         System.debug('Error processing summary: ' + e.getMessage());
-                //         Map<String, Object> errorData = new Map<String, Object>();
-                //         errorData.put('GroupKey', key);
-                //         errorData.put('Error', 'Error processing summary: ' + e.getMessage());
-                //         exportData.add(errorData);
-                //     }
-                // }
+ 
                 else {
                     // Unrecognized object type
                     System.debug('Unrecognized fact object type for key: ' + key);
@@ -963,6 +839,5 @@ public with sharing class DashboardExportController {
         // Serialize the sheets data to JSON for the JS controller
         return JSON.serialize(sheetsData);
     }
-
 
 }

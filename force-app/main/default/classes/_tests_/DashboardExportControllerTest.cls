@@ -86,8 +86,6 @@ private class DashboardExportControllerTest {
             
             // Verify results
             System.assertNotEquals(null, reportData, 'Report data should not be null');
-            // System.assert(reportData.containsKey(componentName), 'Should contain data for the requested component');
-            // System.assert(!reportData.get(componentName).isEmpty(), 'Component data should not be empty');
         }
         
         Test.stopTest();
@@ -534,63 +532,6 @@ private class DashboardExportControllerTest {
         System.assertNotEquals(null, result, 'Should return a list even with null inputs');
         System.assertEquals(false, result.isEmpty(), 'Should contain error information');
     }
-    
-    /**
-     * Test error handling in processReportFactWithDetails
-     */
-    // @isTest
-    // static void testProcessReportFactWithDetails_Error() {
-    //     // Create mock results with null fact map to force error
-    //     Reports.ReportResults mockResults = new Reports.ReportResults();
-    //     Reports.ReportMetadata mockMetadata = new Reports.ReportMetadata();
-        
-    //     Test.startTest();
-    //     List<Map<String, Object>> result = DashboardExportController.processReportFactWithDetails(
-    //         mockResults, mockMetadata, 'invalid'
-    //     );
-    //     Test.stopTest();
-        
-    //     System.assertNotEquals(null, result, 'Should return a list even with error');
-    //     System.assertEquals(false, result.isEmpty(), 'Should contain error information');
-    // }
-    
-    // /**
-    //  * Test error handling in processReportFactWithSummaries
-    //  */
-    // @isTest
-    // static void testProcessReportFactWithSummaries_Error() {
-    //     // Create mock results with null fact map to force error
-    //     Reports.ReportResults mockResults = new Reports.ReportResults();
-    //     Reports.ReportMetadata mockMetadata = new Reports.ReportMetadata();
-        
-    //     Test.startTest();
-    //     List<Map<String, Object>> result = DashboardExportController.processReportFactWithSummaries(
-    //         mockResults, mockMetadata, 'invalid'
-    //     );
-    //     Test.stopTest();
-        
-    //     System.assertNotEquals(null, result, 'Should return a list even with error');
-    //     System.assertEquals(false, result.isEmpty(), 'Should contain error information');
-    // }
-    
-    // /**
-    //  * Test error handling in processSpecialReport
-    //  */
-    // @isTest
-    // static void testProcessSpecialReport_Error() {
-    //     // Create mock results with null fact map to force error
-    //     Reports.ReportResults mockResults = new Reports.ReportResults();
-    //     Reports.ReportMetadata mockMetadata = new Reports.ReportMetadata();
-        
-    //     Test.startTest();
-    //     List<Map<String, Object>> result = DashboardExportController.processSpecialReport(
-    //         mockResults, mockMetadata
-    //     );
-    //     Test.stopTest();
-        
-    //     System.assertNotEquals(null, result, 'Should return a list even with error');
-    //     System.assertEquals(false, result.isEmpty(), 'Should contain error information');
-    // }
 
         @isTest
 
